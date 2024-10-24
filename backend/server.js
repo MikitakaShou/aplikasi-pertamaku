@@ -11,9 +11,15 @@ app.use(cors({
   optionsSuccessStatus: 200,
 }));
 
+// Database connection
 const connection = new sqlite3.Database('./db/aplikasi.db');
 
-// Endpoint untuk mendapatkan user berdasarkan ID
+// Route for the root path (prevents "Cannot GET /" error)
+app.get('/', (req, res) => {
+  res.send('Welcome to the API');
+});
+
+// Endpoint to get a user by ID
 app.get('/api/user/:id', (req, res) => {
   const query = `SELECT * FROM users WHERE id = ${req.params.id}`;
   console.log(query);
@@ -30,7 +36,7 @@ app.get('/api/user/:id', (req, res) => {
   });
 });
 
-// Endpoint untuk mengubah email berdasarkan ID user
+// Endpoint to update user email
 app.post('/api/user/:id/change-email', (req, res) => {
   const newEmail = req.body.email;
   const query = `UPDATE users SET email = '${newEmail}' WHERE id = ${req.params.id}`;
@@ -48,7 +54,7 @@ app.post('/api/user/:id/change-email', (req, res) => {
   });
 });
 
-// Endpoint untuk mengakses file berdasarkan query parameter 'name'
+// Endpoint to serve a file by name
 app.get('/api/file', (req, res) => {
   const __filename = fileURLToPath(import.meta.url);
   const __dirname = path.dirname(__filename);
@@ -57,7 +63,7 @@ app.get('/api/file', (req, res) => {
   res.sendFile(filePath);
 });
 
-// Menjalankan server di port 3000
+// Start the server
 app.listen(3000, () => {
   console.log('Server running on port 3000');
 });
