@@ -43,7 +43,7 @@ app.get('/api/file', (req, res) => {
 });
 
 // Fallback route for SPA
-app.get('mikitakashou', (req, res) => {
+app.get('*', (req, res) => {
   res.sendFile(path.join(__dirname, 'public', 'index.html'));
 });
 
