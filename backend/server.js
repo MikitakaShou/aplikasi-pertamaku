@@ -7,9 +7,10 @@ import cors from 'cors';
 const app = express();
 app.use(express.json());
 app.use(cors({
-  origin: '*',
+  origin: 'http://sammyghoutansitompul.tech/',
   optionsSuccessStatus: 200,
 }));
+
 
 const connection = new sqlite3.Database('./db/aplikasi.db');
 
@@ -19,12 +20,16 @@ const __dirname = path.dirname(__filename);
 app.use(express.static(path.join(__dirname, 'public')));
 
 app.get('/api/user/:id', (req, res) => {
-  const query = `SELECT * FROM users WHERE id = ?`;
-  connection.all(query, [req.params.id], (error, results) => {
-    if (error) throw error;
-    res.json(results);
+  const query = 'SELECT * FROM users WHERE id = ?';
+  connection.get(query, [req.params.id], (error, result) => {
+    if (error) {
+      console.error(error);
+      return res.status(500).send('Internal Server Error');
+    }
+    res.json(result);
   });
 });
+
 
 app.post('/api/user/:id/change-email', (req, res) => {
   const newEmail = req.body.email;
@@ -37,10 +42,17 @@ app.post('/api/user/:id/change-email', (req, res) => {
   });
 });
 
+
 app.get('/api/file', (req, res) => {
-  const filePath = path.join(__dirname, 'files', req.query.name);
-  res.sendFile(filePath);
+  const fileName = path.basename(req.query.name);
+  const filePath = path.join(__dirname, 'files', fileName);
+  res.sendFile(filePath, (err) => {
+    if (err) {
+      res.status(err.status).end();
+    }
+  });
 });
+
 
 // Fallback route for SPA
 app.get('*', (req, res) => {
